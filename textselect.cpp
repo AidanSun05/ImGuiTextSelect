@@ -45,7 +45,7 @@ static float substringSizeX(std::string_view s, size_t start, size_t length = st
 
     auto stringEnd = stringStart;
     if (length == std::string_view::npos) stringEnd = s.end();
-    else utf8::unchecked::advance(stringEnd, length);
+    else utf8::unchecked::advance(stringEnd, std::min(utf8Length(s), length));
 
     // Calculate text size between start and end
     return ImGui::CalcTextSize(&*stringStart, &*stringEnd).x;
@@ -83,10 +83,11 @@ static size_t getCharIndex(std::string_view s, float cursorPosX) {
 
 // Gets the scroll delta for the given cursor position and window bounds.
 static float getScrollDelta(float v, float min, float max) {
-    const float scrollDelta = 250 * ImGui::GetIO().DeltaTime;
+    const float deltaScale = 10.0f * ImGui::GetIO().DeltaTime;
+    const float maxDelta = 100.0f;
 
-    if (v < min) return -scrollDelta;
-    else if (v > max) return scrollDelta;
+    if (v < min) return std::max(-(min - v), -maxDelta) * deltaScale;
+    else if (v > max) return std::min(v - max, maxDelta) * deltaScale;
 
     return 0.0f;
 }
@@ -201,6 +202,9 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
 
     // Start and end positions
     auto [startX, startY, endX, endY] = getSelection();
+
+    size_t numLines = getNumLines();
+    if (startY >= numLines || endY >= numLines) return;
 
     // Add a rectangle to the draw list for each line contained in the selection
     for (size_t i = startY; i <= endY; i++) {
