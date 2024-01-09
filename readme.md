@@ -37,6 +37,7 @@ See below for an example.
 - Double-click selection only handles word boundary characters in Latin Unicode blocks
 - Each line must be the same height (word wrapping is not supported)
 - You should have `ImGuiWindowFlags_NoMove` set in either your window or a child window containing the text so mouse drags can be used to select text instead of moving the window
+- The accessor functions (`getLineAtIdx`, `getNumLines`) should not contain side effects or heavy computations as they can potentially be called multiple times per frame
 
 ImGuiTextSelect works well for text-only windows such as a console/log output or code display.
 
