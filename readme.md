@@ -1,6 +1,8 @@
 # ImGuiTextSelect
 
-This is a text selection implementation for Dear ImGui, extracted from [Network Socket Terminal](https://github.com/NSTerminal/terminal) on 01/06/2024 and released under the MIT License.
+This is a text selection implementation for Dear ImGui, originally part of [Network Socket Terminal](https://github.com/NSTerminal/terminal).
+
+Released under the MIT License.
 
 ![Demo](demo.gif)
 
