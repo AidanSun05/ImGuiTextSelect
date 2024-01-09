@@ -54,7 +54,7 @@ Some discussion on highlightable text in Dear ImGui: [GitHub issue](https://gith
 
 // The lines to show in the window
 // You will need to supply TextSelect instances with functions that:
-//   1. Take a line number (starting from 0) and return that line in an std::string
+//   1. Take a line number (starting from 0) and return that line in an std::string_view
 //   2. Return the total number of lines in the window
 // A vector is a convenient way to fulfill the above requirements, but you may use whatever you like.
 std::vector<std::string> lines{
@@ -66,7 +66,7 @@ std::vector<std::string> lines{
     "UTF-8 characters Ë ⑤ 三【 】┌──┐\n"
 };
 
-std::string getLineAtIdx(size_t idx) {
+std::string_view getLineAtIdx(size_t idx) {
     return lines[idx];
 }
 
