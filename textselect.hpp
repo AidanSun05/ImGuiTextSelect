@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <string>
+#include <string_view>
 
 #include <imgui.h>
 
@@ -38,7 +39,7 @@ class TextSelect {
 
     // Accessor functions to get line information
     // This class only knows about line numbers so it must be provided with functions that give it text data.
-    std::function<std::string(size_t)> getLineAtIdx; // Gets the string given a line number
+    std::function<std::string_view(size_t)> getLineAtIdx; // Gets the string given a line number
     std::function<size_t()> getNumLines; // Gets the total number of lines
 
     // Gets the user selection. Start and end are guaranteed to be in order.

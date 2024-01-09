@@ -115,7 +115,7 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     size_t y = std::min(static_cast<size_t>(std::floor(mousePos.y / textHeight)), getNumLines() - 1);
     if (y < 0) return;
 
-    std::string currentLine = getLineAtIdx(y);
+    std::string_view currentLine = getLineAtIdx(y);
     size_t x = getCharIndex(currentLine, mousePos.x);
 
     // Get mouse click count and determine action
@@ -208,7 +208,7 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
 
     // Add a rectangle to the draw list for each line contained in the selection
     for (size_t i = startY; i <= endY; i++) {
-        std::string line = getLineAtIdx(i);
+        std::string_view line = getLineAtIdx(i);
 
         // Display sizes
         // The width of the space character is used for the width of newlines.
@@ -245,7 +245,7 @@ void TextSelect::copy() const {
     for (size_t i = startY; i <= endY; i++) {
         // Similar logic to drawing selections
         size_t subStart = i == startY ? startX : 0;
-        std::string line = getLineAtIdx(i);
+        std::string_view line = getLineAtIdx(i);
 
         auto stringStart = line.begin();
         utf8::unchecked::advance(stringStart, subStart);
@@ -262,7 +262,7 @@ void TextSelect::copy() const {
 
 void TextSelect::selectAll() {
     size_t lastLineIdx = getNumLines() - 1;
-    std::string lastLine = getLineAtIdx(lastLineIdx);
+    std::string_view lastLine = getLineAtIdx(lastLineIdx);
 
     // Set the selection range from the beginning to the end of the last line
     selectStart = { 0, 0 };
