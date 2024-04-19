@@ -4,7 +4,7 @@ This is a text selection implementation for Dear ImGui, originally part of [Netw
 
 Released under the MIT License.
 
-![Demo](demo.gif)
+![Demo](example/demo.gif)
 
 ## Features
 
@@ -46,6 +46,8 @@ ImGuiTextSelect works well for text-only windows such as a console/log output or
 Some discussion on highlightable text in Dear ImGui: [GitHub issue](https://github.com/ocornut/imgui/issues/950)
 
 ## Example Usage
+
+See [the example code](example/main.cpp) for a full program using ImGuiTextSelect. The example is compiled with the [xmake](https://xmake.io) build system.
 
 ```cpp
 #include <string>
@@ -89,7 +91,7 @@ ImGui::Begin("Text selection");
 // Create a child window with the "NoMove" flag
 // This allows mouse drags to select text (instead of moving the window), while still
 // allowing the window to be moved from the title bar.
-ImGui::BeginChild("text", { 0, 0 }, 0, ImGuiWindowFlags_NoMove);
+ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
 // Display each line
 for (const auto& line : lines) ImGui::TextUnformatted(line.c_str());
