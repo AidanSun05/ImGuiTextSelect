@@ -7,6 +7,7 @@
 #include <array>
 #include <cmath>
 #include <numeric>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -159,7 +160,7 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
         } else {
             // Single click - set start position, invalidate end position
             selectStart = { x, y };
-            selectEnd = { std::string::npos, std::string::npos };
+            selectEnd = { std::string_view::npos, std::string_view::npos };
         }
     } else if (ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
         // Mouse dragging - set end position

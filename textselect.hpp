@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include <functional>
-#include <string>
 #include <string_view>
 
 #include <imgui.h>
@@ -13,13 +12,13 @@
 class TextSelect {
     // Cursor position in the window.
     struct CursorPos {
-        size_t x = std::string::npos; // X index of character
-        size_t y = std::string::npos; // Y index of character
+        size_t x = std::string_view::npos; // X index of character
+        size_t y = std::string_view::npos; // Y index of character
 
         // Checks if this position is invalid.
         bool isInvalid() const {
             // Invalid cursor positions are indicated by std::string::npos
-            return x == std::string::npos || y == std::string::npos;
+            return x == std::string_view::npos || y == std::string_view::npos;
         }
     };
 
