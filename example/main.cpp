@@ -1,3 +1,6 @@
+// Copyright 2024 Aidan Sun
+// SPDX-License-Identifier: MIT
+
 #undef GLFW_INCLUDE_NONE
 
 #include <string>
