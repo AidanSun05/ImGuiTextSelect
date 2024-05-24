@@ -1,4 +1,4 @@
-// Copyright 2024 Aidan Sun
+// Copyright 2024 Aidan Sun and the ImGuiTextSelect contributors
 // SPDX-License-Identifier: MIT
 
 #include <functional>
