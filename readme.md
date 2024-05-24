@@ -18,6 +18,7 @@ Released under the MIT License.
 
 ## Dependencies
 
+- [Dear ImGui](https://github.com/ocornut/imgui)
 - [utfcpp](https://github.com/nemtrif/utfcpp) (For UTF-8 handling)
 - C++20 (For `std::midpoint`, though this can easily be patched to support C++17)
 
