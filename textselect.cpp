@@ -48,8 +48,11 @@ static float substringSizeX(std::string_view s, size_t start, size_t length = st
     if (length == std::string_view::npos) stringEnd = s.end();
     else utf8::unchecked::advance(stringEnd, std::min(utf8Length(s), length));
 
+    // Dereferencing std::string_view::end() may be undefined behavior in some compilers,
+    // because of that, we need to get the pointer value manually if stringEnd == s.end().
+    const char* endPtr = stringEnd == s.end() ? s.data() + s.size() : &*stringEnd;
     // Calculate text size between start and end
-    return ImGui::CalcTextSize(&*stringStart, &*stringEnd).x;
+    return ImGui::CalcTextSize(&*stringStart, endPtr).x;
 }
 
 // Gets the index of the character the mouse cursor is over.
