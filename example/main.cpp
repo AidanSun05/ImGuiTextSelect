@@ -14,12 +14,12 @@
 #include "textselect.hpp"
 
 const std::vector<std::string_view> lines{
-    "Line 1\n",
-    "Line 2\n",
-    "Line 3\n",
-    "A longer line\n",
-    "Text selection in Dear ImGui\n",
-    "UTF-8 characters Ë ⑤ 三【 】┌──┐\n"
+    "Line 1",
+    "Line 2",
+    "Line 3",
+    "A longer line",
+    "Text selection in Dear ImGui",
+    "UTF-8 characters Ë ⑤ 三【 】┌──┐"
 };
 
 std::string_view getLineAtIdx(size_t idx) {

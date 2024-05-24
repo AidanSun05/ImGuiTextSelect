@@ -51,6 +51,7 @@ static float substringSizeX(std::string_view s, size_t start, size_t length = st
     // Dereferencing std::string_view::end() may be undefined behavior in some compilers,
     // because of that, we need to get the pointer value manually if stringEnd == s.end().
     const char* endPtr = stringEnd == s.end() ? s.data() + s.size() : &*stringEnd;
+
     // Calculate text size between start and end
     return ImGui::CalcTextSize(&*stringStart, endPtr).x;
 }
@@ -258,7 +259,11 @@ void TextSelect::copy() const {
         if (i == endY) utf8::unchecked::advance(stringEnd, endX - subStart);
         else stringEnd = line.end();
 
-        selectedText += line.substr(stringStart - line.begin(), stringEnd - stringStart);
+        std::string_view lineToAdd = line.substr(stringStart - line.begin(), stringEnd - stringStart);
+        selectedText += lineToAdd;
+
+        // If lines before the last line don't already end with newlines, add them in
+        if (!lineToAdd.ends_with('\n') && i < endY) selectedText += '\n';
     }
 
     ImGui::SetClipboardText(selectedText.c_str());
