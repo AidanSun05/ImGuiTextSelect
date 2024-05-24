@@ -50,7 +50,7 @@ Some discussion on highlightable text in Dear ImGui: [GitHub issue](https://gith
 See [the example code](example/main.cpp) for a full program using ImGuiTextSelect. The example is compiled with the [xmake](https://xmake.io) build system.
 
 ```cpp
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include "textselect.hpp"
@@ -62,7 +62,7 @@ See [the example code](example/main.cpp) for a full program using ImGuiTextSelec
 //   1. Take a line number (starting from 0) and return that line in an std::string_view
 //   2. Return the total number of lines in the window
 // A vector is a convenient way to fulfill the above requirements, but you may use whatever you like.
-std::vector<std::string> lines{
+std::vector<std::string_view> lines{
     "Line 1\n",
     "Line 2\n",
     "Line 3\n",

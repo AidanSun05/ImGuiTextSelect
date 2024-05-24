@@ -3,7 +3,7 @@
 
 #undef GLFW_INCLUDE_NONE
 
-#include <string>
+#include <string_view>
 #include <vector>
 
 #include <imgui.h>
@@ -13,7 +13,7 @@
 
 #include "textselect.hpp"
 
-const std::vector<std::string> lines{
+const std::vector<std::string_view> lines{
     "Line 1\n",
     "Line 2\n",
     "Line 3\n",
@@ -65,7 +65,7 @@ int main() {
 
         ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
-        for (const auto& line : lines) ImGui::TextUnformatted(line.c_str());
+        for (const auto& line : lines) ImGui::TextUnformatted(line.data());
 
         textSelect.update();
 
