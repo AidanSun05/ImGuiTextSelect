@@ -294,7 +294,15 @@ void TextSelect::update() {
 
     drawSelection(cursorPosStart);
 
+    // Backwards compatibility for Dear ImGui < v1.90.7
+    // To be removed after 2-3 Dear ImGui updates.
+#if IMGUI_VERSION_NUM >= 19070
+    ImGuiKey keyCtrl = ImGuiMod_Ctrl;
+#else
+    ImGuiKey keyCtrl = ImGuiMod_Shortcut;
+#endif
+
     // Keyboard shortcuts
-    if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A)) selectAll();
-    else if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_C)) copy();
+    if (ImGui::Shortcut(keyCtrl | ImGuiKey_A)) selectAll();
+    else if (ImGui::Shortcut(keyCtrl | ImGuiKey_C)) copy();
 }
