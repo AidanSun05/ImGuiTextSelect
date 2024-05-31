@@ -2,6 +2,14 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.1.1 (05/31/2024)
+
+This is a patch release which addresses the breaking changes in Dear ImGui v1.90.7. It is backwards compatible with previous Dear ImGui versions.
+
+### Improvements
+
+- Updated the use of `ImGui::Shortcut()` and `ImGuiMod_Ctrl`.
+
 ## 1.1.0 (05/24/2024)
 
 ### Additions
