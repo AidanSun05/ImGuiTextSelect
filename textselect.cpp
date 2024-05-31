@@ -295,6 +295,6 @@ void TextSelect::update() {
     drawSelection(cursorPosStart);
 
     // Keyboard shortcuts
-    if (ImGui::Shortcut(ImGuiMod_Shortcut | ImGuiKey_A)) selectAll();
-    else if (ImGui::Shortcut(ImGuiMod_Shortcut | ImGuiKey_C)) copy();
+    if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A)) selectAll();
+    else if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_C)) copy();
 }
