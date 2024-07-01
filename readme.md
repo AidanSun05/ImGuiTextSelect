@@ -1,6 +1,6 @@
 # ImGuiTextSelect
 
-This is a text selection implementation for Dear ImGui, originally part of [Network Socket Terminal](https://github.com/NSTerminal/terminal).
+This is a text selection implementation for Dear ImGui, originally part of [WhaleConnect](https://github.com/WhaleConnect/whaleconnect).
 
 Released under the MIT License.
 
