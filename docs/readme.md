@@ -4,7 +4,7 @@ This is a text selection implementation for Dear ImGui, originally part of [Whal
 
 Released under the MIT License.
 
-![Demo](example/demo.gif)
+![Demo](demo.gif)
 
 ## Features
 
