@@ -9,7 +9,6 @@
 #include <numeric>
 #include <string>
 #include <string_view>
-#include <utility>
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -18,8 +17,8 @@
 #include "textselect.hpp"
 
 // Simple word boundary detection, accounts for Latin Unicode blocks only.
-static bool isBoundary(utf8::utfchar32_t c) {
-    using Range = std::pair<utf8::utfchar32_t, utf8::utfchar32_t>;
+static bool isBoundary(char32_t c) {
+    using Range = std::array<char32_t, 2>;
     std::array ranges{
         Range{ 0x20, 0x2F },
         Range{ 0x3A, 0x40 },
@@ -29,7 +28,7 @@ static bool isBoundary(utf8::utfchar32_t c) {
         Range{ 0xD7, 0xF7 },
     };
 
-    return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r.first && c <= r.second; })
+    return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r[0] && c <= r[1]; })
         != ranges.end();
 }
 
