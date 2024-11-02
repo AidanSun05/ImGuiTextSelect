@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <functional>
 #include <string_view>
 
@@ -14,8 +15,8 @@
 class TextSelect {
     // Cursor position in the window.
     struct CursorPos {
-        size_t x = std::string_view::npos; // X index of character
-        size_t y = std::string_view::npos; // Y index of character
+        std::size_t x = std::string_view::npos; // X index of character
+        std::size_t y = std::string_view::npos; // Y index of character
 
         // Checks if this position is invalid.
         bool isInvalid() const {
@@ -26,10 +27,10 @@ class TextSelect {
 
     // Text selection in the window.
     struct Selection {
-        size_t startX;
-        size_t startY;
-        size_t endX;
-        size_t endY;
+        std::size_t startX;
+        std::size_t startY;
+        std::size_t endX;
+        std::size_t endY;
     };
 
     // Selection bounds
@@ -40,8 +41,8 @@ class TextSelect {
 
     // Accessor functions to get line information
     // This class only knows about line numbers so it must be provided with functions that give it text data.
-    std::function<std::string_view(size_t)> getLineAtIdx; // Gets the string given a line number
-    std::function<size_t()> getNumLines; // Gets the total number of lines
+    std::function<std::string_view(std::size_t)> getLineAtIdx; // Gets the string given a line number
+    std::function<std::size_t()> getNumLines; // Gets the total number of lines
 
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
@@ -57,8 +58,8 @@ class TextSelect {
 
 public:
     // Sets the text accessor functions.
-    // getLineAtIdx: Function taking a size_t (line number) and returning the string in that line
-    // getNumLines: Function returning a size_t (total number of lines of text)
+    // getLineAtIdx: Function taking a std::size_t (line number) and returning the string in that line
+    // getNumLines: Function returning a std::size_t (total number of lines of text)
     template <class T, class U>
     TextSelect(const T& getLineAtIdx, const U& getNumLines) : getLineAtIdx(getLineAtIdx), getNumLines(getNumLines) {}
 

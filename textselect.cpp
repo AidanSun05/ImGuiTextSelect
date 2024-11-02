@@ -33,12 +33,12 @@ static bool isBoundary(char32_t c) {
 }
 
 // Gets the number of UTF-8 characters (not bytes) in a string.
-static size_t utf8Length(std::string_view s) {
+static std::size_t utf8Length(std::string_view s) {
     return utf8::unchecked::distance(s.begin(), s.end());
 }
 
 // Gets the display width of a substring.
-static float substringSizeX(std::string_view s, size_t start, size_t length = std::string_view::npos) {
+static float substringSizeX(std::string_view s, std::size_t start, std::size_t length = std::string_view::npos) {
     // Convert char-based start and length into byte-based iterators
     auto stringStart = s.begin();
     utf8::unchecked::advance(stringStart, start);
@@ -56,7 +56,7 @@ static float substringSizeX(std::string_view s, size_t start, size_t length = st
 }
 
 // Gets the index of the character the mouse cursor is over.
-static size_t getCharIndex(std::string_view s, float cursorPosX, size_t start, size_t end) {
+static std::size_t getCharIndex(std::string_view s, float cursorPosX, std::size_t start, std::size_t end) {
     // Ignore cursor position when it is invalid
     if (cursorPosX < 0) return 0;
 
@@ -65,7 +65,7 @@ static size_t getCharIndex(std::string_view s, float cursorPosX, size_t start, s
     if (end < start) return utf8Length(s);
 
     // Midpoint of given string range
-    size_t midIdx = std::midpoint(start, end);
+    std::size_t midIdx = std::midpoint(start, end);
 
     // Display width of the entire string up to the midpoint, gives the x-position where the (midIdx + 1)th char starts
     float widthToMid = substringSizeX(s, 0, midIdx + 1);
@@ -81,7 +81,7 @@ static size_t getCharIndex(std::string_view s, float cursorPosX, size_t start, s
 }
 
 // Wrapper for getCharIndex providing the initial bounds.
-static size_t getCharIndex(std::string_view s, float cursorPosX) {
+static std::size_t getCharIndex(std::string_view s, float cursorPosX) {
     return getCharIndex(s, cursorPosX, 0, utf8Length(s));
 }
 
@@ -101,12 +101,12 @@ TextSelect::Selection TextSelect::getSelection() const {
     bool startBeforeEnd = selectStart.y < selectEnd.y || (selectStart.y == selectEnd.y && selectStart.x < selectEnd.x);
 
     // Reorder X points if necessary
-    size_t startX = startBeforeEnd ? selectStart.x : selectEnd.x;
-    size_t endX = startBeforeEnd ? selectEnd.x : selectStart.x;
+    std::size_t startX = startBeforeEnd ? selectStart.x : selectEnd.x;
+    std::size_t endX = startBeforeEnd ? selectEnd.x : selectStart.x;
 
     // Get min and max Y positions for start and end
-    size_t startY = std::min(selectStart.y, selectEnd.y);
-    size_t endY = std::max(selectStart.y, selectEnd.y);
+    std::size_t startY = std::min(selectStart.y, selectEnd.y);
+    std::size_t endY = std::max(selectStart.y, selectEnd.y);
 
     return { startX, startY, endX, endY };
 }
@@ -116,11 +116,11 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     ImVec2 mousePos = ImGui::GetMousePos() - cursorPosStart;
 
     // Get Y position of mouse cursor, in terms of line number (capped to the index of the last line)
-    size_t y = std::min(static_cast<size_t>(std::floor(mousePos.y / textHeight)), getNumLines() - 1);
+    std::size_t y = std::min(static_cast<std::size_t>(std::floor(mousePos.y / textHeight)), getNumLines() - 1);
     if (y < 0) return;
 
     std::string_view currentLine = getLineAtIdx(y);
-    size_t x = getCharIndex(currentLine, mousePos.x);
+    std::size_t x = getCharIndex(currentLine, mousePos.x);
 
     // Get mouse click count and determine action
     if (int mouseClicks = ImGui::GetMouseClickedCount(ImGuiMouseButton_Left); mouseClicks > 0) {
@@ -133,20 +133,20 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
             // Initialize start and end iterators to current cursor position
             utf8::unchecked::iterator startIt{ currentLine.data() };
             utf8::unchecked::iterator endIt{ currentLine.data() };
-            for (size_t i = 0; i < x; i++) {
+            for (std::size_t i = 0; i < x; i++) {
                 startIt++;
                 endIt++;
             }
 
             // Scan to left until a word boundary is reached
-            for (size_t startInv = 0; startInv <= x; startInv++) {
+            for (std::size_t startInv = 0; startInv <= x; startInv++) {
                 if (isBoundary(*startIt)) break;
                 selectStart = { x - startInv, y };
                 startIt--;
             }
 
             // Scan to right until a word boundary is reached
-            for (size_t end = x; end <= utf8Length(currentLine); end++) {
+            for (std::size_t end = x; end <= utf8Length(currentLine); end++) {
                 selectEnd = { end, y };
                 if (isBoundary(*endIt)) break;
                 endIt++;
@@ -207,11 +207,11 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
     // Start and end positions
     auto [startX, startY, endX, endY] = getSelection();
 
-    size_t numLines = getNumLines();
+    std::size_t numLines = getNumLines();
     if (startY >= numLines || endY >= numLines) return;
 
     // Add a rectangle to the draw list for each line contained in the selection
-    for (size_t i = startY; i <= endY; i++) {
+    for (std::size_t i = startY; i <= endY; i++) {
         std::string_view line = getLineAtIdx(i);
 
         // Display sizes
@@ -246,9 +246,9 @@ void TextSelect::copy() const {
     // Collect selected text in a single string
     std::string selectedText;
 
-    for (size_t i = startY; i <= endY; i++) {
+    for (std::size_t i = startY; i <= endY; i++) {
         // Similar logic to drawing selections
-        size_t subStart = i == startY ? startX : 0;
+        std::size_t subStart = i == startY ? startX : 0;
         std::string_view line = getLineAtIdx(i);
 
         auto stringStart = line.begin();
@@ -269,7 +269,7 @@ void TextSelect::copy() const {
 }
 
 void TextSelect::selectAll() {
-    size_t lastLineIdx = getNumLines() - 1;
+    std::size_t lastLineIdx = getNumLines() - 1;
     std::string_view lastLine = getLineAtIdx(lastLineIdx);
 
     // Set the selection range from the beginning to the end of the last line
