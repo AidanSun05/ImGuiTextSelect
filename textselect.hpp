@@ -1,6 +1,8 @@
 // Copyright 2024 Aidan Sun and the ImGuiTextSelect contributors
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
 #include <functional>
 #include <string_view>
 
