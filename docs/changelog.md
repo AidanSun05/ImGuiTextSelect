@@ -2,6 +2,15 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.1.3 (11/02/2024)
+
+### Improvements
+
+- Added the missing `#pragma once` in the header file.
+- Changed uses of `size_t` to `std::size_t`.
+- Removed dependency on `std::pair` and `<utility>`.
+- Improved word boundary detection: double-clicking a sequence of boundary characters now selects all of them instead of just one.
+
 ## 1.1.2 (08/09/2024)
 
 ### Removals
