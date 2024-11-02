@@ -22,10 +22,8 @@ static bool isBoundary(char32_t c) {
     std::array ranges{
         Range{ 0x20, 0x2F },
         Range{ 0x3A, 0x40 },
-        Range{ 0x5B, 0x5E },
-        Range{ 0x60, 0x60 },
-        Range{ 0x7B, 0xBF },
-        Range{ 0xD7, 0xF7 },
+        Range{ 0x5B, 0x60 },
+        Range{ 0x7B, 0xBF }
     };
 
     return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r[0] && c <= r[1]; })
@@ -138,9 +136,11 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
                 endIt++;
             }
 
+            bool isCurrentBoundary = isBoundary(*startIt);
+
             // Scan to left until a word boundary is reached
             for (std::size_t startInv = 0; startInv <= x; startInv++) {
-                if (isBoundary(*startIt)) break;
+                if (isBoundary(*startIt) != isCurrentBoundary) break;
                 selectStart = { x - startInv, y };
                 startIt--;
             }
@@ -148,12 +148,9 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
             // Scan to right until a word boundary is reached
             for (std::size_t end = x; end <= utf8Length(currentLine); end++) {
                 selectEnd = { end, y };
-                if (isBoundary(*endIt)) break;
+                if (isBoundary(*endIt) != isCurrentBoundary) break;
                 endIt++;
             }
-
-            // If a boundary character was double-clicked, select that character
-            if (selectEnd.x == selectStart.x) selectEnd.x++;
         } else if (ImGui::IsKeyDown(ImGuiMod_Shift)) {
             // Single click with shift - select text from start to click
             // The selection starts from the beginning if no start position exists
