@@ -1,4 +1,4 @@
-// Copyright 2024 Aidan Sun and the ImGuiTextSelect contributors
+// Copyright 2024-2025 Aidan Sun and the ImGuiTextSelect contributors
 // SPDX-License-Identifier: MIT
 
 #define IMGUI_DEFINE_MATH_OPERATORS
