@@ -1,8 +1,6 @@
 // Copyright 2024-2025 Aidan Sun and the ImGuiTextSelect contributors
 // SPDX-License-Identifier: MIT
 
-#undef GLFW_INCLUDE_NONE
-
 #include <string_view>
 #include <vector>
 
@@ -47,6 +45,17 @@ int main() {
     ImGui::CreateContext();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
+    // UTF-8 support requires a compatible font that can be used to display the characters
+    // An example of loading a font is below
+    // Tip: ImGuiTextSelect works with both monospace and variable-width fonts.
+    //
+    // ImVector<ImWchar> ranges;
+    // ImFontGlyphRangesBuilder builder;
+    // builder.AddText("Ë ⑤ 三【 】┌──┐"); // Add special characters from the lines above
+    // builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+    // builder.BuildRanges(&ranges);
+    // ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msjh.ttc", 18.0f, nullptr, ranges.Data);
+
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -60,7 +69,7 @@ int main() {
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::SetNextWindowSize({ 300, 200 });
+        ImGui::SetNextWindowSize({ 300, 200 }, ImGuiCond_FirstUseEver);
         ImGui::Begin("Text selection");
 
         ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
