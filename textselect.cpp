@@ -37,6 +37,9 @@ static std::size_t utf8Length(std::string_view s) {
 
 // Gets the display width of a substring.
 static float substringSizeX(std::string_view s, std::size_t start, std::size_t length = std::string_view::npos) {
+    // For an empty string, data() or begin() == end()
+    if (s.empty()) return 0;
+
     // Convert char-based start and length into byte-based iterators
     auto stringStart = s.begin();
     utf8::unchecked::advance(stringStart, start);
