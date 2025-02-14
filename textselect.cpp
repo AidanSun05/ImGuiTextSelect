@@ -115,9 +115,10 @@ TextSelect::Selection TextSelect::getSelection() const {
 void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     const float textHeight = ImGui::GetTextLineHeightWithSpacing();
     ImVec2 mousePos = ImGui::GetMousePos() - cursorPosStart;
+    std::size_t numLines = getNumLines();
 
     // Get Y position of mouse cursor, in terms of line number (capped to the index of the last line)
-    std::size_t y = std::min(static_cast<std::size_t>(std::floor(mousePos.y / textHeight)), getNumLines() - 1);
+    std::size_t y = std::min(static_cast<std::size_t>(std::floor(mousePos.y / textHeight)), numLines - 1);
     if (y < 0) return;
 
     std::string_view currentLine = getLineAtIdx(y);
@@ -127,8 +128,9 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     if (int mouseClicks = ImGui::GetMouseClickedCount(ImGuiMouseButton_Left); mouseClicks > 0) {
         if (mouseClicks % 3 == 0) {
             // Triple click - select line
+            bool atLastLine = y == (numLines - 1);
             selectStart = { 0, y };
-            selectEnd = { utf8Length(currentLine), y };
+            selectEnd = { atLastLine ? utf8Length(currentLine) : 0, atLastLine ? y : y + 1 };
         } else if (mouseClicks % 2 == 0) {
             // Double click - select word
             // Initialize start and end iterators to current cursor position
