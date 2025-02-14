@@ -2,6 +2,16 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.1.4 (02/14/2025)
+
+### Improvements
+
+- Improved newline handling for triple-click selection.
+
+### Bug Fixes
+
+- Fixed UB when selecting empty lines. The newline character is now included in the selection rectangle and copied text.
+
 ## 1.1.3 (11/02/2024)
 
 ### Improvements
