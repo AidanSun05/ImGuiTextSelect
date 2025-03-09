@@ -23,7 +23,7 @@ constexpr T midpoint(T a, T b) {
 }
 
 // Checks if a string view ends with the specified char suffix
-bool ends_with(std::string_view str, char suffix) {
+bool endsWith(std::string_view str, char suffix) {
     return !str.empty() && str.back() == suffix;
 }
 
