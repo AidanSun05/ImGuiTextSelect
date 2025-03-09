@@ -16,7 +16,7 @@
 
 #include "textselect.hpp"
 
-// Calculates the midpoint between two numbers at compile time
+// Calculates the midpoint between two numbers
 template<typename T>
 constexpr T midpoint(T a, T b) {
     return a + (b - a) / 2;
