@@ -16,6 +16,17 @@
 
 #include "textselect.hpp"
 
+// Calculates the midpoint between two numbers at compile time
+template<typename T>
+constexpr T midpoint(T a, T b) {
+    return a + (b - a) / 2;
+}
+
+// Checks if a string view ends with the specified char suffix
+bool ends_with(std::string_view str, char suffix) {
+    return !str.empty() && str.back() == suffix;
+}
+
 // Simple word boundary detection, accounts for Latin Unicode blocks only.
 static bool isBoundary(char32_t c) {
     using Range = std::array<char32_t, 2>;
@@ -66,7 +77,7 @@ static std::size_t getCharIndex(std::string_view s, float cursorPosX, std::size_
     if (end < start) return utf8Length(s);
 
     // Midpoint of given string range
-    std::size_t midIdx = std::midpoint(start, end);
+    std::size_t midIdx = midpoint(start, end);
 
     // Display width of the entire string up to the midpoint, gives the x-position where the (midIdx + 1)th char starts
     float widthToMid = substringSizeX(s, 0, midIdx + 1);
@@ -264,7 +275,7 @@ void TextSelect::copy() const {
         selectedText += lineToAdd;
 
         // If lines before the last line don't already end with newlines, add them in
-        if (!lineToAdd.ends_with('\n') && i < endY) selectedText += '\n';
+        if (!ends_with(lineToAdd, '\n') && i < endY) selectedText += '\n';
     }
 
     ImGui::SetClipboardText(selectedText.c_str());
