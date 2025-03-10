@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
-#include <numeric>
 #include <string>
 #include <string_view>
 
@@ -275,7 +274,7 @@ void TextSelect::copy() const {
         selectedText += lineToAdd;
 
         // If lines before the last line don't already end with newlines, add them in
-        if (!ends_with(lineToAdd, '\n') && i < endY) selectedText += '\n';
+        if (!endsWith(lineToAdd, '\n') && i < endY) selectedText += '\n';
     }
 
     ImGui::SetClipboardText(selectedText.c_str());

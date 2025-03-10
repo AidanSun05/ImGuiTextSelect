@@ -7,7 +7,7 @@ add_requires("opengl", "utfcpp")
 add_requireconfs("imgui.glfw", { configs = { glfw_include = "system" } })
 
 target("example")
-    set_languages("c++20")
+    set_languages("c++17")
     set_encodings("utf-8")
 
     add_packages("imgui", "glfw", "opengl", "utfcpp")
