@@ -20,7 +20,7 @@ Released under the MIT License.
 
 - [Dear ImGui](https://github.com/ocornut/imgui)
 - [utfcpp](https://github.com/nemtrif/utfcpp) (For UTF-8 handling)
-- C++20 (For `std::midpoint`, though this can easily be patched to support C++17)
+- C++17 or later
 
 ## Integration
 
@@ -95,7 +95,7 @@ ImGui::Begin("Text selection");
 ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
 // Display each line
-for (const auto& line : lines) ImGui::TextUnformatted(line.c_str());
+for (const auto& line : lines) ImGui::TextUnformatted(line.data());
 
 // Update TextSelect instance (all text selection is handled in this method)
 textSelect.update();
