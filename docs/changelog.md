@@ -2,6 +2,12 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## Unreleased
+
+### Improvements
+
+- Added native support for C++17 (#4). Thanks @jonkwl!
+
 ## 1.1.4 (02/14/2025)
 
 ### Improvements
