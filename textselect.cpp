@@ -297,8 +297,18 @@ void TextSelect::update() {
     if (hovered) ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
 
     // Handle mouse events
+    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        if (hovered) {
+            shouldHandleMouseDown = true;
+        }
+    }
+
+    if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {
+        shouldHandleMouseDown = false;
+    }
+
     if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
-        handleMouseDown(cursorPosStart);
+        if (shouldHandleMouseDown) handleMouseDown(cursorPosStart);
         if (!hovered) handleScrolling();
     }
 
