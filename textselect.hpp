@@ -44,6 +44,10 @@ class TextSelect {
     std::function<std::string_view(std::size_t)> getLineAtIdx; // Gets the string given a line number
     std::function<std::size_t()> getNumLines; // Gets the total number of lines
 
+    // Indicates whether selection should be updated. This is needed for distinguishing mouse drags that are
+    // initiated by clicking the text, or different element.
+    bool shouldHandleMouseDown = false;
+
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
 
