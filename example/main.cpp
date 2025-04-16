@@ -29,7 +29,9 @@ size_t getNumLines() {
 }
 
 int main() {
-    if (!glfwInit()) return 1;
+    if (!glfwInit()) {
+        return 1;
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -37,7 +39,9 @@ int main() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
     GLFWwindow* window = glfwCreateWindow(1280, 720, "ImGuiTextSelect example", nullptr, nullptr);
-    if (!window) return 1;
+    if (!window) {
+        return 1;
+    }
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
@@ -74,16 +78,22 @@ int main() {
 
         ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
-        for (const auto& line : lines) ImGui::TextUnformatted(line.data());
+        for (const auto& line : lines) {
+            ImGui::TextUnformatted(line.data());
+        }
 
         textSelect.update();
 
         if (ImGui::BeginPopupContextWindow()) {
             ImGui::BeginDisabled(!textSelect.hasSelection());
-            if (ImGui::MenuItem("Copy", "Ctrl+C")) textSelect.copy();
+            if (ImGui::MenuItem("Copy", "Ctrl+C")) {
+                textSelect.copy();
+            }
             ImGui::EndDisabled();
 
-            if (ImGui::MenuItem("Select all", "Ctrl+A")) textSelect.selectAll();
+            if (ImGui::MenuItem("Select all", "Ctrl+A")) {
+                textSelect.selectAll();
+            }
             ImGui::EndPopup();
         }
 

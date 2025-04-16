@@ -95,7 +95,9 @@ ImGui::Begin("Text selection");
 ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
 // Display each line
-for (const auto& line : lines) ImGui::TextUnformatted(line.data());
+for (const auto& line : lines) {
+    ImGui::TextUnformatted(line.data());
+}
 
 // Update TextSelect instance (all text selection is handled in this method)
 textSelect.update();
@@ -105,10 +107,14 @@ textSelect.update();
 // for manual control.
 if (ImGui::BeginPopupContextWindow()) {
     ImGui::BeginDisabled(!textSelect.hasSelection());
-    if (ImGui::MenuItem("Copy", "Ctrl+C")) textSelect.copy();
+    if (ImGui::MenuItem("Copy", "Ctrl+C")) {
+        textSelect.copy();
+    }
     ImGui::EndDisabled();
 
-    if (ImGui::MenuItem("Select all", "Ctrl+A")) textSelect.selectAll();
+    if (ImGui::MenuItem("Select all", "Ctrl+A")) {
+        textSelect.selectAll();
+    }
     ImGui::EndPopup();
 }
 
