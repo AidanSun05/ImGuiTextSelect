@@ -2,6 +2,12 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## Unreleased
+
+### Bug Fixes
+
+- Fixed crash when text is empty (#7). Thanks @twixuss!
+
 ## 1.1.5 (04/16/2025)
 
 ### Improvements
