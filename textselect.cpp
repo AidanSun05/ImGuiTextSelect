@@ -147,6 +147,8 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
 
     // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
     std::size_t y = static_cast<std::size_t>(std::min(std::max(std::floor(mousePos.y / textHeight), 0.0f), static_cast<float>(numLines - 1)));
+    if (y >= numLines)
+        return;
 
     std::string_view currentLine = getLineAtIdx(y);
     std::size_t x = getCharIndex(currentLine, mousePos.x);
