@@ -141,9 +141,14 @@ TextSelect::Selection TextSelect::getSelection() const {
 }
 
 void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
+    std::size_t numLines = getNumLines();
+
+    if (numLines == 0) {
+        return;
+    }
+
     const float textHeight = ImGui::GetTextLineHeightWithSpacing();
     ImVec2 mousePos = ImGui::GetMousePos() - cursorPosStart;
-    std::size_t numLines = getNumLines();
 
     // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
     std::size_t y = static_cast<std::size_t>(std::min(std::max(std::floor(mousePos.y / textHeight), 0.0f), static_cast<float>(numLines - 1)));
