@@ -329,6 +329,16 @@ void TextSelect::handleScrolling() const {
     }
 }
 
+static void drawSelectionRect(const ImVec2& cursorPosStart, float minX, float minY, float maxX, float maxY) {
+    // Get rectangle corner points offset from the cursor's start position in the window
+    ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
+    ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
+
+    // Draw the rectangle
+    ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
+    ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+}
+
 void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
     if (!hasSelection()) {
         return;
@@ -376,13 +386,7 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
                 float minX = 0;
                 float maxX = newlineWidth;
 
-                // Get rectangle corner points offset from the cursor's start position in the window
-                ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
-                ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
-
-                // Draw the rectangle
-                ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
-                ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+                drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
             }
 
             for (std::size_t j = 0; j < subLines.size(); ++j) {
@@ -421,13 +425,7 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
                 float minX = isStartSubLine ? substringSizeX(subLine, 0, startX - std::min(subLineStartX, startX)) : 0;
                 float maxX = isEndSubLine ? substringSizeX(subLine, 0, endX - std::min(subLineStartX, endX)) : substringSizeX(subLine, 0) + newlineWidth;
 
-                // Get rectangle corner points offset from the cursor's start position in the window
-                ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
-                ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
-
-                // Draw the rectangle
-                ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
-                ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+                drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
             }
         }
 
@@ -452,13 +450,7 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
         float minY = static_cast<float>(i) * textHeight;
         float maxY = static_cast<float>(i + 1) * textHeight;
 
-        // Get rectangle corner points offset from the cursor's start position in the window
-        ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
-        ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
-
-        // Draw the rectangle
-        ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
-        ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+        drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
     }
 }
 
