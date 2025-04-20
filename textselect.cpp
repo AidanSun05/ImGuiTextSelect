@@ -164,7 +164,7 @@ static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidt
         wrappedLineEnd = font->CalcWordWrapPositionA(1, wrappedLineStart, textEnd, wrapWidth);
 
         if (wrappedLineEnd - wrappedLineStart != 0) {
-            result.push_back(std::string_view(wrappedLineStart, wrappedLineEnd));
+            result.push_back({ wrappedLineStart, static_cast<std::size_t>(wrappedLineEnd - wrappedLineStart) });
         }
 
         wrappedLineEnd = CalcWordWrapNextLineStartA(wrappedLineEnd, textEnd);
@@ -205,13 +205,14 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
 
             accumulatedHeight += currentLineSize.y + ImGui::GetCurrentContext()->Style.ItemSpacing.y;
         }
-        if (y >= numLines)
+        if (y >= numLines) {
             return;
+        }
 
         currentLine = getLineAtIdx(y);
 
         // Calculate index of the sub-line in the current line.
-        std::size_t localWrappedY = static_cast<std::size_t>(std::min(std::max(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f), std::round(currentLineSize.y / textHeight) - 1));
+        std::size_t localWrappedY = static_cast<std::size_t>(std::clamp(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f, std::round(currentLineSize.y / textHeight) - 1));
 
         ImFont *font = ImGui::GetCurrentContext()->Font;
 
@@ -221,9 +222,10 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
         x = currentSubLine.data() - currentLine.data() + getCharIndex(currentSubLine, mousePos.x);
     } else {
         // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
-        y = static_cast<std::size_t>(std::min(std::max(std::floor(mousePos.y / textHeight), 0.0f), static_cast<float>(numLines - 1)));
-        if (y >= numLines)
+        y = static_cast<std::size_t>(std::clamp(std::floor(mousePos.y / textHeight), 0.0f, static_cast<float>(numLines - 1)));
+        if (y >= numLines) {
             return;
+        }
 
         currentLine = getLineAtIdx(y);
         x = getCharIndex(currentLine, mousePos.x);
