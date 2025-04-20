@@ -211,15 +211,17 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
 
         currentLine = getLineAtIdx(y);
 
-        // Calculate index of the sub-line in the current line.
-        std::size_t localWrappedY = static_cast<std::size_t>(std::clamp(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f, std::round(currentLineSize.y / textHeight) - 1));
 
         ImFont *font = ImGui::GetCurrentContext()->Font;
 
         auto subLines = wrapText(currentLine, wrapWidth, font);
+
+        // Calculate index of the sub-line in the current line.
+        std::size_t localWrappedY = static_cast<std::size_t>(std::clamp(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f, static_cast<float>(subLines.size() - 1)));
+
         auto currentSubLine = subLines[localWrappedY];
 
-        x = currentSubLine.data() - currentLine.data() + getCharIndex(currentSubLine, mousePos.x);
+        x = utf8::distance(currentLine.data(), currentSubLine.data()) + getCharIndex(currentSubLine, mousePos.x);
     } else {
         // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
         y = static_cast<std::size_t>(std::clamp(std::floor(mousePos.y / textHeight), 0.0f, static_cast<float>(numLines - 1)));
@@ -366,8 +368,8 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
                 const char *subLineEnd = subLine.data() + subLine.size();
 
                 // Indices of sub-line bounds relative to the start of the whole line.
-                std::size_t subLineStartX = subLineStart - line.data();
-                std::size_t subLineEndX   = subLineEnd - line.data();
+                std::size_t subLineStartX = utf8::distance(line.data(), subLineStart);
+                std::size_t subLineEndX   = utf8::distance(line.data(), subLineEnd);
 
                 float minY = accumulatedHeight;
                 accumulatedHeight += textHeight;
