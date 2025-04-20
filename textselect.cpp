@@ -219,7 +219,7 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
             x = 0;
         } else {
             // Calculate index of the sub-line in the current line.
-            std::size_t localWrappedY = static_cast<std::size_t>(std::min(std::max(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f), static_cast<float>(subLines.size() - 1)));
+            std::size_t localWrappedY = static_cast<std::size_t>(std::clamp(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f, static_cast<float>(subLines.size() - 1)));
 
             auto currentSubLine = subLines[localWrappedY];
 
