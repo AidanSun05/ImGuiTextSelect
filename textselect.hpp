@@ -48,7 +48,9 @@ class TextSelect {
     // initiated by clicking the text, or different element.
     bool shouldHandleMouseDown = false;
     
-    bool enableWordWrap = true;
+    // Indicates whether text selection with word wrapping should be enabled.
+    bool enableWordWrap;
+
 
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
