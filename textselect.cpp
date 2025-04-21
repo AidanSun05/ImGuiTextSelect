@@ -15,13 +15,13 @@
 
 #include "textselect.hpp"
 
-// Calculates the midpoint between two numbers
+// Calculates the midpoint between two numbers.
 template<typename T>
 constexpr T midpoint(T a, T b) {
     return a + (b - a) / 2;
 }
 
-// Checks if a string view ends with the specified char suffix
+// Checks if a string view ends with the specified char suffix.
 bool endsWith(std::string_view str, char suffix) {
     return !str.empty() && str.back() == suffix;
 }
