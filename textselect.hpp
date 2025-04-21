@@ -10,7 +10,7 @@
 #include <imgui.h>
 
 // Manages text selection in a GUI window.
-// This class only works if the window only has text, and line wrapping is not supported.
+// This class only works if the window only has text.
 // The window should also have the "NoMove" flag set so mouse drags can be used to select text.
 class TextSelect {
     // Cursor position in the window.
