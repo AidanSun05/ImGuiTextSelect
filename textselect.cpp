@@ -206,9 +206,7 @@ ImVector<TextSelect::SubLine> TextSelect::getSubLines() const {
     return result;
 }
 
-void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
-    auto subLines = getSubLines();
-
+void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) {
     if (subLines.size() == 0) {
         return;
     }
@@ -358,7 +356,7 @@ static void drawSelectionRect(const ImVec2& cursorPosStart, float minX, float mi
     ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
 }
 
-void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
+void TextSelect::drawSelection(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) const {
     if (!hasSelection()) {
         return;
     }
@@ -370,8 +368,6 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
     if (startY >= numLines || endY >= numLines) {
         return;
     }
-
-    auto subLines = getSubLines();
 
     float accumulatedHeight = 0;
     
@@ -481,6 +477,9 @@ void TextSelect::update() {
         ImGui::SetMouseCursor(ImGuiMouseCursor_TextInput);
     }
 
+    // Split whole lines by wrap width (if enabled).
+    auto subLines = getSubLines();
+
     // Handle mouse events
     if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
         if (hovered) {
@@ -494,14 +493,14 @@ void TextSelect::update() {
 
     if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
         if (shouldHandleMouseDown) {
-            handleMouseDown(cursorPosStart);
+            handleMouseDown(subLines, cursorPosStart);
         }
         if (!hovered) {
             handleScrolling();
         }
     }
 
-    drawSelection(cursorPosStart);
+    drawSelection(subLines, cursorPosStart);
 
     // Keyboard shortcuts
     if (ImGui::Shortcut(ImGuiMod_Ctrl | ImGuiKey_A)) {

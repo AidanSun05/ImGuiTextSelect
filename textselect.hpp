@@ -66,13 +66,13 @@ class TextSelect {
     ImVector<SubLine> getSubLines() const;
 
     // Processes mouse down (click/drag) events.
-    void handleMouseDown(const ImVec2& cursorPosStart);
+    void handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart);
 
     // Processes scrolling events.
     void handleScrolling() const;
 
     // Draws the text selection rectangle in the window.
-    void drawSelection(const ImVec2& cursorPosStart) const;
+    void drawSelection(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) const;
 
 public:
     // Sets the text accessor functions.
