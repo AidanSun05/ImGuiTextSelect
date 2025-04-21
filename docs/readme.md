@@ -15,6 +15,7 @@ Released under the MIT License.
 - Automatic scrolling for selecting text outside the window's visible area
 - Integration in context menus
 - UTF-8 text support
+- Word wrapping support
 
 ## Dependencies
 
@@ -38,7 +39,6 @@ See below for an example.
 
 - Only left-to-right text is supported
 - Double-click selection only handles word boundary characters in Latin Unicode blocks
-- Each line must be the same height (word wrapping is not supported)
 - You should have `ImGuiWindowFlags_NoMove` set in either your window or a child window containing the text so mouse drags can be used to select text instead of moving the window
 - The accessor functions (`getLineAtIdx`, `getNumLines`) should not contain side effects or heavy computations as they can potentially be called multiple times per frame
 
@@ -80,7 +80,8 @@ size_t getNumLines() {
     return lines.size();
 }
 
-// Create a TextSelect instance
+// Create a TextSelect instance. You can pass `true` as third argument to enable word wrapping.
+// Wrapping is disabled by default.
 TextSelect textSelect{ getLineAtIdx, getNumLines };
 
 // ---------- In the main render loop: ----------
@@ -96,6 +97,7 @@ ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
 // Display each line
 for (const auto& line : lines) {
+    // Call `TextUnformatted` or `TextWrapped` depending on what flag was passed to the constructor
     ImGui::TextUnformatted(line.data());
 }
 
