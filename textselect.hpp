@@ -26,11 +26,18 @@ class TextSelect {
     };
 
     // Text selection in the window.
+    // Y - index of _whole_ line.
+    // X - character index relative to beginning of that whole line.
     struct Selection {
         std::size_t startX;
         std::size_t startY;
         std::size_t endX;
         std::size_t endY;
+    };
+    
+    struct SubLine {
+        std::string_view string;
+        std::size_t wholeLineIndex; // Which whole line this subline belongs to.
     };
 
     // Selection bounds
@@ -54,6 +61,9 @@ class TextSelect {
 
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
+
+    // Splits all whole lines by wrap width if wrapping is enabled. Otherwise returns whole lines.
+    ImVector<SubLine> getSubLines() const;
 
     // Processes mouse down (click/drag) events.
     void handleMouseDown(const ImVec2& cursorPosStart);
