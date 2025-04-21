@@ -140,6 +140,39 @@ TextSelect::Selection TextSelect::getSelection() const {
     return { startX, startY, endX, endY };
 }
 
+//
+// Taken from imgui_draw.cpp
+//
+// Trim trailing space and find beginning of next line
+static inline const char* CalcWordWrapNextLineStartA(const char* text, const char* text_end)
+{
+    while (text < text_end && ImCharIsBlankA(*text))
+        text++;
+    if (*text == '\n')
+        text++;
+    return text;
+}
+
+// Split `text` that does not fit in `wrapWidth` into multiple lines.
+static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidth, ImFont *font) {
+    ImVector<std::string_view> result;
+    const char *textEnd = text.data() + text.size();
+    const char *wrappedLineStart = text.data();
+    const char *wrappedLineEnd = text.data();
+    while (wrappedLineEnd != textEnd) {
+        wrappedLineStart = wrappedLineEnd;
+        wrappedLineEnd = font->CalcWordWrapPositionA(1, wrappedLineStart, textEnd, wrapWidth);
+
+        if (wrappedLineEnd - wrappedLineStart != 0) {
+            result.push_back({ wrappedLineStart, static_cast<std::size_t>(wrappedLineEnd - wrappedLineStart) });
+        }
+
+        wrappedLineEnd = CalcWordWrapNextLineStartA(wrappedLineEnd, textEnd);
+    }
+
+    return result;
+}
+
 void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     std::size_t numLines = getNumLines();
 
@@ -150,11 +183,60 @@ void TextSelect::handleMouseDown(const ImVec2& cursorPosStart) {
     const float textHeight = ImGui::GetTextLineHeightWithSpacing();
     ImVec2 mousePos = ImGui::GetMousePos() - cursorPosStart;
 
-    // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
-    std::size_t y = static_cast<std::size_t>(std::min(std::max(std::floor(mousePos.y / textHeight), 0.0f), static_cast<float>(numLines - 1)));
+    std::string_view currentLine;
+    std::size_t x, y;
+    if (enableWordWrap) {
+        ImGuiWindow *window = ImGui::GetCurrentWindow();
 
-    std::string_view currentLine = getLineAtIdx(y);
-    std::size_t x = getCharIndex(currentLine, mousePos.x);
+        const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
+
+        // Find the index of the line under the cursor and its size.
+        float accumulatedHeight = 0;
+        ImVec2 currentLineSize = {};
+        y = numLines - 1;
+        for (std::size_t i = 0; i < numLines - 1; ++i) {
+            std::string_view line = getLineAtIdx(i);
+            currentLineSize = ImGui::CalcTextSize(line.data(), line.data() + line.size(), false, wrapWidth);
+
+            if (mousePos.y < accumulatedHeight + currentLineSize.y) {
+                y = i;
+                break;
+            }
+
+            accumulatedHeight += currentLineSize.y + ImGui::GetCurrentContext()->Style.ItemSpacing.y;
+        }
+        if (y >= numLines) {
+            return;
+        }
+
+        currentLine = getLineAtIdx(y);
+
+        ImFont *font = ImGui::GetCurrentContext()->Font;
+
+        auto subLines = wrapText(currentLine, wrapWidth, font);
+
+        if (subLines.size() == 0) {
+            x = 0;
+        } else {
+            // Calculate index of the sub-line in the current line.
+            std::size_t localWrappedY = static_cast<std::size_t>(std::clamp(std::floor((mousePos.y - accumulatedHeight) / textHeight), 0.0f, static_cast<float>(subLines.size() - 1)));
+
+            auto currentSubLine = subLines[localWrappedY];
+
+            x = utf8::distance(currentLine.data(), currentSubLine.data()) + getCharIndex(currentSubLine, mousePos.x);
+        }
+    } else {
+        // Get Y position of mouse cursor, in terms of line number (clamped to the valid range)
+        y = static_cast<std::size_t>(std::clamp(std::floor(mousePos.y / textHeight), 0.0f, static_cast<float>(numLines - 1)));
+        if (y >= numLines) {
+            return;
+        }
+
+        currentLine = getLineAtIdx(y);
+        x = getCharIndex(currentLine, mousePos.x);
+    }
+
+
 
     // Get mouse click count and determine action
     if (int mouseClicks = ImGui::GetMouseClickedCount(ImGuiMouseButton_Left); mouseClicks > 0) {
@@ -247,6 +329,16 @@ void TextSelect::handleScrolling() const {
     }
 }
 
+static void drawSelectionRect(const ImVec2& cursorPosStart, float minX, float minY, float maxX, float maxY) {
+    // Get rectangle corner points offset from the cursor's start position in the window
+    ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
+    ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
+
+    // Draw the rectangle
+    ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
+    ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+}
+
 void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
     if (!hasSelection()) {
         return;
@@ -257,6 +349,86 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
 
     std::size_t numLines = getNumLines();
     if (startY >= numLines || endY >= numLines) {
+        return;
+    }
+
+    if (enableWordWrap) {
+        ImGuiContext *context = ImGui::GetCurrentContext();
+        ImGuiWindow *window = ImGui::GetCurrentWindow();
+        ImFont *font = context->Font;
+        const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
+        const float newlineWidth = ImGui::CalcTextSize(" ").x;
+
+        // Calculate height of region before selection.
+        float accumulatedHeight = 0;
+        for (std::size_t i = 0; i < startY; ++i) {
+            std::string_view line = getLineAtIdx(i);
+            accumulatedHeight += ImGui::CalcTextSize(line.data(), line.data() + line.size(), false, wrapWidth).y + context->Style.ItemSpacing.y;
+        }
+
+        const float textHeight = context->FontSize;
+        const float itemSpacing = context->Style.ItemSpacing.y;
+
+        // Render wrapped lines.
+        for (std::size_t i = startY; i <= endY; ++i) {
+            std::string_view line = getLineAtIdx(i);
+            const char *lineEnd = line.data() + line.size();
+
+            auto subLines = wrapText(line, wrapWidth, font);
+
+            if (subLines.size() == 0) {
+                // If this line is empty just draw one quad on the left side.
+
+                float minY = accumulatedHeight;
+                accumulatedHeight += textHeight + itemSpacing;
+                float maxY = accumulatedHeight;
+
+                float minX = 0;
+                float maxX = newlineWidth;
+
+                drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
+            }
+
+            for (std::size_t j = 0; j < subLines.size(); ++j) {
+                auto subLine = subLines[j];
+                const char *subLineStart = subLine.data();
+                const char *subLineEnd = subLine.data() + subLine.size();
+
+                // Indices of sub-line bounds relative to the start of the whole line.
+                std::size_t subLineStartX = utf8::distance(line.data(), subLineStart);
+                std::size_t subLineEndX   = utf8::distance(line.data(), subLineEnd);
+
+                float minY = accumulatedHeight;
+                accumulatedHeight += textHeight;
+                // Item spacing is not applied between sub-lines
+                if (subLineEnd == lineEnd) {
+                    // We are rendering last sub-line.
+                    accumulatedHeight += itemSpacing;
+                }
+                float maxY = accumulatedHeight;
+                
+                // Skip unselected sub-lines.
+                if (i == startY && startX >= subLineEndX) {
+                    // Sub-line before selection
+                    continue;
+                }
+                if (i == endY && endX < subLineStartX) {
+                    // Sub-line after selection
+                    break;
+                }
+
+                // The first and last rectangles should only extend to the selection boundaries
+                // The middle rectangles (if any) enclose the entire line + some extra width for the newline.
+                bool isStartSubLine = i == startY && subLineStartX <= startX && startX <= subLineEndX;
+                bool isEndSubLine = i == endY && subLineStartX <= endX && endX <= subLineEndX;
+
+                float minX = isStartSubLine ? substringSizeX(subLine, 0, startX - std::min(subLineStartX, startX)) : 0;
+                float maxX = isEndSubLine ? substringSizeX(subLine, 0, endX - std::min(subLineStartX, endX)) : substringSizeX(subLine, 0) + newlineWidth;
+
+                drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
+            }
+        }
+
         return;
     }
 
@@ -278,13 +450,7 @@ void TextSelect::drawSelection(const ImVec2& cursorPosStart) const {
         float minY = static_cast<float>(i) * textHeight;
         float maxY = static_cast<float>(i + 1) * textHeight;
 
-        // Get rectangle corner points offset from the cursor's start position in the window
-        ImVec2 rectMin = cursorPosStart + ImVec2{ minX, minY };
-        ImVec2 rectMax = cursorPosStart + ImVec2{ maxX, maxY };
-
-        // Draw the rectangle
-        ImU32 color = ImGui::GetColorU32(ImGuiCol_TextSelectedBg);
-        ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
+        drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
     }
 }
 

@@ -47,6 +47,10 @@ class TextSelect {
     // Indicates whether selection should be updated. This is needed for distinguishing mouse drags that are
     // initiated by clicking the text, or different element.
     bool shouldHandleMouseDown = false;
+    
+    // Indicates whether text selection with word wrapping should be enabled.
+    bool enableWordWrap;
+
 
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
@@ -65,7 +69,10 @@ public:
     // getLineAtIdx: Function taking a std::size_t (line number) and returning the string in that line
     // getNumLines: Function returning a std::size_t (total number of lines of text)
     template <class T, class U>
-    TextSelect(const T& getLineAtIdx, const U& getNumLines) : getLineAtIdx(getLineAtIdx), getNumLines(getNumLines) {}
+    TextSelect(const T& getLineAtIdx, const U& getNumLines, bool enableWordWrap = false) :
+        getLineAtIdx(getLineAtIdx),
+        getNumLines(getNumLines),
+        enableWordWrap(enableWordWrap) {}
 
     // Checks if there is an active selection in the text.
     bool hasSelection() const {
