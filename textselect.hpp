@@ -20,7 +20,7 @@ class TextSelect {
 
         // Checks if this position is invalid.
         bool isInvalid() const {
-            // Invalid cursor positions are indicated by std::string::npos
+            // Invalid cursor positions are indicated by std::string_view::npos
             return x == std::string_view::npos || y == std::string_view::npos;
         }
     };
