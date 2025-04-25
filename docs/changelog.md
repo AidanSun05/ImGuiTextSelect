@@ -4,6 +4,10 @@ This document tracks the changes between ImGuiTextSelect versions. Dates are wri
 
 ## Unreleased
 
+### Additions
+
+- Added wrapped text support (#8, #9, #10). Thanks @twixuss!
+
 ### Bug Fixes
 
 - Fixed crash when text is empty (#7). Thanks @twixuss!
