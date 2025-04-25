@@ -1,6 +1,8 @@
 -- Copyright 2024-2025 Aidan Sun and the ImGuiTextSelect contributors
 -- SPDX-License-Identifier: MIT
 
+add_rules("mode.debug")
+
 add_requires("imgui", { configs = { glfw = true, opengl3 = true } })
 add_requires("glfw", { configs = { glfw_include = "system" } })
 add_requires("opengl", "utfcpp")
