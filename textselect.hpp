@@ -34,7 +34,7 @@ class TextSelect {
         std::size_t endX;
         std::size_t endY;
     };
-    
+
     struct SubLine {
         std::string_view string;
         std::size_t wholeLineIndex; // Which whole line this subline belongs to.
@@ -54,10 +54,9 @@ class TextSelect {
     // Indicates whether selection should be updated. This is needed for distinguishing mouse drags that are
     // initiated by clicking the text, or different element.
     bool shouldHandleMouseDown = false;
-    
+
     // Indicates whether text selection with word wrapping should be enabled.
     bool enableWordWrap;
-
 
     // Gets the user selection. Start and end are guaranteed to be in order.
     Selection getSelection() const;
@@ -66,13 +65,13 @@ class TextSelect {
     ImVector<SubLine> getSubLines() const;
 
     // Processes mouse down (click/drag) events.
-    void handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart);
+    void handleMouseDown(const ImVector<TextSelect::SubLine>& subLines, const ImVec2& cursorPosStart);
 
     // Processes scrolling events.
     void handleScrolling() const;
 
     // Draws the text selection rectangle in the window.
-    void drawSelection(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) const;
+    void drawSelection(const ImVector<TextSelect::SubLine>& subLines, const ImVec2& cursorPosStart) const;
 
 public:
     // Sets the text accessor functions.
@@ -80,9 +79,7 @@ public:
     // getNumLines: Function returning a std::size_t (total number of lines of text)
     template <class T, class U>
     TextSelect(const T& getLineAtIdx, const U& getNumLines, bool enableWordWrap = false) :
-        getLineAtIdx(getLineAtIdx),
-        getNumLines(getNumLines),
-        enableWordWrap(enableWordWrap) {}
+        getLineAtIdx(getLineAtIdx), getNumLines(getNumLines), enableWordWrap(enableWordWrap) {}
 
     // Checks if there is an active selection in the text.
     bool hasSelection() const {

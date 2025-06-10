@@ -3,6 +3,8 @@
 
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+#include "textselect.hpp"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -13,10 +15,8 @@
 #include <imgui_internal.h>
 #include <utf8.h>
 
-#include "textselect.hpp"
-
 // Calculates the midpoint between two numbers.
-template<typename T>
+template <typename T>
 constexpr T midpoint(T a, T b) {
     return a + (b - a) / 2;
 }
@@ -29,12 +29,7 @@ bool endsWith(std::string_view str, char suffix) {
 // Simple word boundary detection, accounts for Latin Unicode blocks only.
 static bool isBoundary(char32_t c) {
     using Range = std::array<char32_t, 2>;
-    std::array ranges{
-        Range{ 0x20, 0x2F },
-        Range{ 0x3A, 0x40 },
-        Range{ 0x5B, 0x60 },
-        Range{ 0x7B, 0xBF }
-    };
+    std::array ranges{ Range{ 0x20, 0x2F }, Range{ 0x3A, 0x40 }, Range{ 0x5B, 0x60 }, Range{ 0x7B, 0xBF } };
 
     return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r[0] && c <= r[1]; })
         != ranges.end();
@@ -144,23 +139,20 @@ TextSelect::Selection TextSelect::getSelection() const {
 // Taken from imgui_draw.cpp
 //
 // Trim trailing space and find beginning of next line
-static inline const char* CalcWordWrapNextLineStartA(const char* text, const char* text_end)
-{
-    while (text < text_end && ImCharIsBlankA(*text))
-        text++;
-    if (*text == '\n')
-        text++;
+static inline const char* CalcWordWrapNextLineStartA(const char* text, const char* text_end) {
+    while (text < text_end && ImCharIsBlankA(*text)) text++;
+    if (*text == '\n') text++;
     return text;
 }
 
 // Split `text` that does not fit in `wrapWidth` into multiple lines.
 // result.size() is never 0.
-static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidth, ImFont *font) {
+static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidth, ImFont* font) {
     ImVector<std::string_view> result;
 
-    const char *textEnd = text.data() + text.size();
-    const char *wrappedLineStart = text.data();
-    const char *wrappedLineEnd = text.data();
+    const char* textEnd = text.data() + text.size();
+    const char* wrappedLineStart = text.data();
+    const char* wrappedLineEnd = text.data();
     while (wrappedLineEnd != textEnd) {
         wrappedLineStart = wrappedLineEnd;
         wrappedLineEnd = font->CalcWordWrapPositionA(1, wrappedLineStart, textEnd, wrapWidth);
@@ -174,7 +166,7 @@ static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidt
 
     // Treat empty text as one empty line.
     if (result.size() == 0) {
-        result.push_back({text.data(), 0});
+        result.push_back({ text.data(), 0 });
     }
 
     return result;
@@ -188,8 +180,8 @@ ImVector<TextSelect::SubLine> TextSelect::getSubLines() const {
     // There will be at minimum `numLines` sublines.
     result.reserve(numLines);
 
-    ImGuiWindow *window = ImGui::GetCurrentWindow();
-    ImFont *font = ImGui::GetCurrentContext()->Font;
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImFont* font = ImGui::GetCurrentContext()->Font;
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
 
     for (std::size_t i = 0; i < numLines; ++i) {
@@ -197,21 +189,21 @@ ImVector<TextSelect::SubLine> TextSelect::getSubLines() const {
         if (enableWordWrap) {
             auto subLines = wrapText(wholeLine, wrapWidth, font);
             for (auto subLine : subLines) {
-                result.push_back({subLine, i});
+                result.push_back({ subLine, i });
             }
         } else {
-            result.push_back({wholeLine, i});
+            result.push_back({ wholeLine, i });
         }
     }
     return result;
 }
 
-void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) {
+void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine>& subLines, const ImVec2& cursorPosStart) {
     if (subLines.size() == 0) {
         return;
     }
 
-    ImGuiWindow *window = ImGui::GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
     const float textHeight = ImGui::GetTextLineHeight();
     const float itemSpacing = ImGui::GetCurrentContext()->Style.ItemSpacing.y;
@@ -238,7 +230,8 @@ void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, 
 
     std::string_view currentWholeLine = getLineAtIdx(wholeY);
 
-    std::size_t charsInWholeLineBeforeSubLine = utf8Length({currentWholeLine.data(), static_cast<std::size_t>(currentSubLine.data() - currentWholeLine.data())});
+    std::size_t charsInWholeLineBeforeSubLine = utf8Length(
+        { currentWholeLine.data(), static_cast<std::size_t>(currentSubLine.data() - currentWholeLine.data()) });
 
     std::size_t wholeX = getCharIndex(currentSubLine, mousePos.x) + charsInWholeLineBeforeSubLine;
 
@@ -249,13 +242,15 @@ void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine> &subLines, 
 
             // Find the first sub line in the whole line
             std::size_t firstSubLineIndex = subY;
-            while (firstSubLineIndex > 0 && subLines[firstSubLineIndex - 1].wholeLineIndex == subLines[firstSubLineIndex].wholeLineIndex) {
+            while (firstSubLineIndex > 0
+                && subLines[firstSubLineIndex - 1].wholeLineIndex == subLines[firstSubLineIndex].wholeLineIndex) {
                 --firstSubLineIndex;
             }
 
             // Find the last sub line in the whole line
             std::size_t lastSubLineIndex = subY;
-            while (lastSubLineIndex < subLines.size() - 1 && subLines[lastSubLineIndex + 1].wholeLineIndex == subLines[lastSubLineIndex].wholeLineIndex) {
+            while (lastSubLineIndex < subLines.size() - 1
+                && subLines[lastSubLineIndex + 1].wholeLineIndex == subLines[lastSubLineIndex].wholeLineIndex) {
                 ++lastSubLineIndex;
             }
 
@@ -356,7 +351,7 @@ static void drawSelectionRect(const ImVec2& cursorPosStart, float minX, float mi
     ImGui::GetWindowDrawList()->AddRectFilled(rectMin, rectMax, color);
 }
 
-void TextSelect::drawSelection(const ImVector<TextSelect::SubLine> &subLines, const ImVec2& cursorPosStart) const {
+void TextSelect::drawSelection(const ImVector<TextSelect::SubLine>& subLines, const ImVec2& cursorPosStart) const {
     if (!hasSelection()) {
         return;
     }
@@ -370,10 +365,10 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine> &subLines, co
     }
 
     float accumulatedHeight = 0;
-    
-    ImGuiContext *context = ImGui::GetCurrentContext();
-    ImGuiWindow *window = ImGui::GetCurrentWindow();
-    ImFont *font = context->Font;
+
+    ImGuiContext* context = ImGui::GetCurrentContext();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
+    ImFont* font = context->Font;
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
     const float newlineWidth = ImGui::CalcTextSize(" ").x;
     const float textHeight = context->FontSize;
@@ -384,12 +379,12 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine> &subLines, co
 
         auto wholeLineEnd = wholeLine.data() + wholeLine.size();
 
-        const char *subLineStart = subLine.string.data();
-        const char *subLineEnd = subLine.string.data() + subLine.string.size();
+        const char* subLineStart = subLine.string.data();
+        const char* subLineEnd = subLine.string.data() + subLine.string.size();
 
         // Indices of sub-line bounds relative to the start of the whole line.
         std::size_t subLineStartX = utf8::distance(wholeLine.data(), subLineStart);
-        std::size_t subLineEndX   = utf8::distance(wholeLine.data(), subLineEnd);
+        std::size_t subLineEndX = utf8::distance(wholeLine.data(), subLineEnd);
 
         float minY = accumulatedHeight;
         accumulatedHeight += textHeight;
@@ -415,7 +410,8 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine> &subLines, co
         bool isEndSubLine = subLine.wholeLineIndex == endY && subLineStartX <= endX && endX <= subLineEndX;
 
         float minX = isStartSubLine ? substringSizeX(subLine.string, 0, startX - std::min(subLineStartX, startX)) : 0;
-        float maxX = isEndSubLine ? substringSizeX(subLine.string, 0, endX - std::min(subLineStartX, endX)) : substringSizeX(subLine.string, 0) + newlineWidth;
+        float maxX = isEndSubLine ? substringSizeX(subLine.string, 0, endX - std::min(subLineStartX, endX))
+                                  : substringSizeX(subLine.string, 0) + newlineWidth;
 
         drawSelectionRect(cursorPosStart, minX, minY, maxX, maxY);
     }

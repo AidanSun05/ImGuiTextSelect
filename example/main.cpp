@@ -4,10 +4,10 @@
 #include <string_view>
 #include <vector>
 
+#include <GLFW/glfw3.h>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
-#include <GLFW/glfw3.h>
 
 #include "textselect.hpp"
 
@@ -17,7 +17,7 @@ const std::vector<std::string_view> lines{
     "Line 3",
     "A longer line",
     "Text selection in Dear ImGui",
-    "UTF-8 characters Ë ⑤ 三【 】┌──┐"
+    "UTF-8 characters Ë ⑤ 三【 】┌──┐",
 };
 
 std::string_view getLineAtIdx(size_t idx) {
