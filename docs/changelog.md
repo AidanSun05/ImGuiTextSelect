@@ -2,11 +2,15 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
-## Unreleased
+## 1.1.6 (06/10/2025)
 
 ### Additions
 
 - Added wrapped text support (#8, #9, #10). Thanks @twixuss!
+
+### Improvements
+
+- Introduced clang-format for consistent formatting.
 
 ### Bug Fixes
 
