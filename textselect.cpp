@@ -147,7 +147,10 @@ static inline const char* CalcWordWrapNextLineStartA(const char* text, const cha
 
 // Split `text` that does not fit in `wrapWidth` into multiple lines.
 // result.size() is never 0.
-static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidth, ImFont* font) {
+static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidth) {
+    ImFont* font = ImGui::GetCurrentContext()->Font;
+    const float size = ImGui::GetFontBaked()->Size;
+
     ImVector<std::string_view> result;
 
     const char* textEnd = text.data() + text.size();
@@ -155,7 +158,7 @@ static ImVector<std::string_view> wrapText(std::string_view text, float wrapWidt
     const char* wrappedLineEnd = text.data();
     while (wrappedLineEnd != textEnd) {
         wrappedLineStart = wrappedLineEnd;
-        wrappedLineEnd = font->CalcWordWrapPositionA(1, wrappedLineStart, textEnd, wrapWidth);
+        wrappedLineEnd = font->CalcWordWrapPosition(size, wrappedLineStart, textEnd, wrapWidth);
 
         if (wrappedLineEnd - wrappedLineStart != 0) {
             result.push_back({ wrappedLineStart, static_cast<std::size_t>(wrappedLineEnd - wrappedLineStart) });
@@ -181,13 +184,12 @@ ImVector<TextSelect::SubLine> TextSelect::getSubLines() const {
     result.reserve(numLines);
 
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    ImFont* font = ImGui::GetCurrentContext()->Font;
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
 
     for (std::size_t i = 0; i < numLines; ++i) {
         auto wholeLine = getLineAtIdx(i);
         if (enableWordWrap) {
-            auto subLines = wrapText(wholeLine, wrapWidth, font);
+            auto subLines = wrapText(wholeLine, wrapWidth);
             for (auto subLine : subLines) {
                 result.push_back({ subLine, i });
             }
@@ -368,7 +370,6 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine>& subLines, co
 
     ImGuiContext* context = ImGui::GetCurrentContext();
     ImGuiWindow* window = ImGui::GetCurrentWindow();
-    ImFont* font = context->Font;
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
     const float newlineWidth = ImGui::CalcTextSize(" ").x;
     const float textHeight = context->FontSize;
