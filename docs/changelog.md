@@ -2,6 +2,14 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.2.0 (06/25/2025)
+
+This is a patch release which addresses the breaking changes in Dear ImGui v1.92.0. It drops support for previous Dear ImGui versions.
+
+### Improvements
+
+- Updated the use of `ImFont::CalcWordWrapPosition()` and added use of `ImGui::GetFontBaked()`. This allows word-wrapped text selection to work with dynamic font rendering introduced in Dear ImGui v1.92.0.
+
 ## 1.1.6 (06/10/2025)
 
 ### Additions
