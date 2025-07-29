@@ -67,6 +67,9 @@ int main() {
 
     TextSelect textSelect{ getLineAtIdx, getNumLines };
 
+    // If using word wrapping:
+    // TextSelect textSelect{ getLineAtIdx, getNumLines, true };
+
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
@@ -80,6 +83,9 @@ int main() {
 
         for (const auto& line : lines) {
             ImGui::TextUnformatted(line.data());
+
+            // If using word wrapping:
+            // ImGui::TextWrapped("%s", line.data());
         }
 
         textSelect.update();
