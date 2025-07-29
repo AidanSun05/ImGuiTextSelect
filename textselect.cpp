@@ -384,8 +384,8 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine>& subLines, co
         const char* subLineEnd = subLine.string.data() + subLine.string.size();
 
         // Indices of sub-line bounds relative to the start of the whole line.
-        std::size_t subLineStartX = utf8::distance(wholeLine.data(), subLineStart);
-        std::size_t subLineEndX = utf8::distance(wholeLine.data(), subLineEnd);
+        std::size_t subLineStartX = utf8::unchecked::distance(wholeLine.data(), subLineStart);
+        std::size_t subLineEndX = utf8::unchecked::distance(wholeLine.data(), subLineEnd);
 
         float minY = accumulatedHeight;
         accumulatedHeight += textHeight;
