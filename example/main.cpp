@@ -53,27 +53,25 @@ int main() {
     // An example of loading a font is below
     // Tip: ImGuiTextSelect works with both monospace and variable-width fonts.
     //
-    ImVector<ImWchar> ranges;
-    ImFontGlyphRangesBuilder builder;
-    builder.AddText("Ë ⑤ 三【 】┌──┐"); // Add special characters from the lines above
-    builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
-    builder.BuildRanges(&ranges);
-    ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msjh.ttc", 18.0f, nullptr, ranges.Data);
+    // ImVector<ImWchar> ranges;
+    // ImFontGlyphRangesBuilder builder;
+    // builder.AddText("Ë ⑤ 三【 】┌──┐"); // Add special characters from the lines above
+    // builder.AddRanges(ImGui::GetIO().Fonts->GetGlyphRangesDefault());
+    // builder.BuildRanges(&ranges);
+    // ImGui::GetIO().Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\msjh.ttc", 18.0f, nullptr, ranges.Data);
 
     ImGui::StyleColorsDark();
 
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init();
 
-    TextSelect textSelect{ getLineAtIdx, getNumLines, true };
-    float size = 18.0f;
+    TextSelect textSelect{ getLineAtIdx, getNumLines };
 
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::PushFont(nullptr, size);
 
         ImGui::SetNextWindowSize({ 300, 200 }, ImGuiCond_FirstUseEver);
         ImGui::Begin("Text selection");
@@ -81,7 +79,7 @@ int main() {
         ImGui::BeginChild("text", {}, 0, ImGuiWindowFlags_NoMove);
 
         for (const auto& line : lines) {
-            ImGui::TextWrapped("%s", line.data());
+            ImGui::TextUnformatted(line.data());
         }
 
         textSelect.update();
@@ -102,11 +100,6 @@ int main() {
         ImGui::EndChild();
         ImGui::End();
 
-        ImGui::Begin("asdsa");
-        if (ImGui::Button("adsa")) size += 2.0f;
-        ImGui::End();
-
-        ImGui::PopFont();
         ImGui::Render();
         int displayX, displayY;
         glfwGetFramebufferSize(window, &displayX, &displayY);
