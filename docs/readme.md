@@ -20,12 +20,11 @@ Released under the MIT License.
 ## Dependencies
 
 - [Dear ImGui](https://github.com/ocornut/imgui)
-- [utfcpp](https://github.com/nemtrif/utfcpp) (For UTF-8 handling)
 - C++17 or later
 
 ## Integration
 
-Copy `textselect.cpp` and `textselect.hpp` into your project, and update your build settings to compile `textselect.cpp`. Also, copy utfcpp into your project so it can be included as `<utf8.h>`. (utfcpp is a header-only library so it does not need to be compiled.)
+Copy `textselect.cpp` and `textselect.hpp` into your project, and update your build settings to compile `textselect.cpp`.
 
 To apply text selection to a window:
 
@@ -48,7 +47,7 @@ Some discussion on highlightable text in Dear ImGui: [GitHub issue](https://gith
 
 ## Example Usage
 
-See [the example code](example/main.cpp) for a full program using ImGuiTextSelect. The example is compiled with the [xmake](https://xmake.io) build system.
+See [the example code](/example/main.cpp) for a full program using ImGuiTextSelect. The example is compiled with the [xmake](https://xmake.io) build system.
 
 ```cpp
 #include <string_view>
@@ -105,8 +104,8 @@ for (const auto& line : lines) {
 textSelect.update();
 
 // Register a context menu (optional)
-// The TextSelect class provides the hasSelection, copy, and selectAll methods
-// for manual control.
+// The TextSelect class provides the hasSelection, copy, selectAll, and clearSelection
+// methods for manual control.
 if (ImGui::BeginPopupContextWindow()) {
     ImGui::BeginDisabled(!textSelect.hasSelection());
     if (ImGui::MenuItem("Copy", "Ctrl+C")) {
@@ -116,6 +115,10 @@ if (ImGui::BeginPopupContextWindow()) {
 
     if (ImGui::MenuItem("Select all", "Ctrl+A")) {
         textSelect.selectAll();
+    }
+
+    if (ImGui::MenuItem("Clear selection")) {
+        textSelect.clearSelection();
     }
     ImGui::EndPopup();
 }

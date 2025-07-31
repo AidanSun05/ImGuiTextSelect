@@ -2,6 +2,16 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.3.0 (07/30/2025)
+
+### Additions
+
+- Added a `clearSelection` method (#12). Thanks @yansong1221!
+
+### Removals
+
+- Removed the dependency on the utfcpp library (#12). Thanks @yansong1221!
+
 ## 1.2.0 (06/25/2025)
 
 This is a patch release which addresses the breaking changes in Dear ImGui v1.92.0. It drops support for previous Dear ImGui versions.

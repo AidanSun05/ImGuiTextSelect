@@ -95,8 +95,9 @@ public:
     // Draws the text selection rectangle and handles user input.
     void update();
 
+    // Clears the current text selection.
     void clearSelection() {
-        selectStart = CursorPos();
-        selectEnd = CursorPos();
+        selectStart = {};
+        selectEnd = {};
     }
 };

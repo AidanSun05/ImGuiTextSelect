@@ -5,13 +5,13 @@ add_rules("mode.debug")
 
 add_requires("imgui", { configs = { glfw = true, opengl3 = true } })
 add_requires("glfw", { configs = { glfw_include = "system" } })
-add_requires("opengl", "utfcpp")
+add_requires("opengl")
 add_requireconfs("imgui.glfw", { configs = { glfw_include = "system" } })
 
 target("example")
     set_languages("c++17")
     set_encodings("utf-8")
 
-    add_packages("imgui", "glfw", "opengl", "utfcpp")
+    add_packages("imgui", "glfw", "opengl")
     add_files("example/main.cpp", "textselect.cpp")
     add_includedirs(".")
