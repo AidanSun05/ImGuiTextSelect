@@ -2,6 +2,12 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## Unreleased
+
+### Additions
+
+- Added a CMake build script for the example (#13). Thanks @yansong1221!
+
 ## 1.3.0 (07/30/2025)
 
 ### Additions

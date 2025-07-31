@@ -47,7 +47,7 @@ Some discussion on highlightable text in Dear ImGui: [GitHub issue](https://gith
 
 ## Example Usage
 
-See [the example code](/example/main.cpp) for a full program using ImGuiTextSelect. The example is compiled with the [xmake](https://xmake.io) build system.
+See [the example code](/example/main.cpp) for a full program using ImGuiTextSelect. The example can be compiled with either the [CMake](https://cmake.org) or [xmake](https://xmake.io) build system.
 
 ```cpp
 #include <string_view>
