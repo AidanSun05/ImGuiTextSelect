@@ -13,7 +13,6 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
-#include <utf8.h>
 
 // Calculates the midpoint between two numbers.
 template <typename T>
@@ -27,8 +26,8 @@ bool endsWith(std::string_view str, char suffix) {
 }
 
 // Simple word boundary detection, accounts for Latin Unicode blocks only.
-static bool isBoundary(char32_t c) {
-    using Range = std::array<char32_t, 2>;
+static bool isBoundary(ImWchar32 c) {
+    using Range = std::array<ImWchar32, 2>;
     std::array ranges{ Range{ 0x20, 0x2F }, Range{ 0x3A, 0x40 }, Range{ 0x5B, 0x60 }, Range{ 0x7B, 0xBF } };
 
     return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r[0] && c <= r[1]; })
@@ -37,7 +36,26 @@ static bool isBoundary(char32_t c) {
 
 // Gets the number of UTF-8 characters (not bytes) in a string.
 static std::size_t utf8Length(std::string_view s) {
-    return utf8::unchecked::distance(s.begin(), s.end());
+    return ImTextCountCharsFromUtf8(s.data(), s.data() + s.size());
+}
+
+static std::size_t utf8Length(const char* start, const char* end) {
+    return ImTextCountCharsFromUtf8(start, end);
+}
+
+static const char* ImGuiAdvanceUtf8(const char* text, int n) {
+    const char* p = text;
+    while (n > 0 && *p) {
+        unsigned int c;
+        p += ImTextCharFromUtf8(&c, p, nullptr);
+        n--;
+    }
+    return p;
+}
+
+inline static ImWchar32 textCharFromUtf8(const char* in_text, const char* in_text_end = nullptr) {
+    ImWchar32 c;
+    return ImTextCharFromUtf8(&c, in_text, in_text_end) > 0 ? c : 0;
 }
 
 // Gets the display width of a substring.
@@ -48,22 +66,17 @@ static float substringSizeX(std::string_view s, std::size_t start, std::size_t l
     }
 
     // Convert char-based start and length into byte-based iterators
-    auto stringStart = s.begin();
-    utf8::unchecked::advance(stringStart, start);
+    const char* stringStart = ImGuiAdvanceUtf8(s.data(), start);
 
-    auto stringEnd = stringStart;
+    const char* stringEnd = nullptr;
     if (length == std::string_view::npos) {
-        stringEnd = s.end();
+        stringEnd = s.data() + s.size();
     } else {
-        utf8::unchecked::advance(stringEnd, std::min(utf8Length(s), length));
+        stringEnd = ImGuiAdvanceUtf8(stringStart, std::min(utf8Length(s), length));
     }
 
-    // Dereferencing std::string_view::end() may be undefined behavior in some compilers,
-    // because of that, we need to get the pointer value manually if stringEnd == s.end().
-    const char* endPtr = stringEnd == s.end() ? s.data() + s.size() : &*stringEnd;
-
     // Calculate text size between start and end
-    return ImGui::CalcTextSize(&*stringStart, endPtr).x;
+    return ImGui::CalcTextSize(stringStart, stringEnd).x;
 }
 
 // Gets the index of the character the mouse cursor is over.
@@ -262,31 +275,30 @@ void TextSelect::handleMouseDown(const ImVector<TextSelect::SubLine>& subLines, 
         } else if (mouseClicks % 2 == 0) {
             // Double click - select word
             // Initialize start and end iterators to current cursor position
-            utf8::unchecked::iterator startIt{ currentWholeLine.data() };
-            utf8::unchecked::iterator endIt{ currentWholeLine.data() };
-            for (std::size_t i = 0; i < wholeX; i++) {
-                startIt++;
-                endIt++;
-            }
+            const char* startIt{ currentWholeLine.data() };
+            const char* endIt{ currentWholeLine.data() };
 
-            bool isCurrentBoundary = isBoundary(*startIt);
+            startIt = ImGuiAdvanceUtf8(startIt, wholeX);
+            endIt = ImGuiAdvanceUtf8(endIt, wholeX);
+
+            bool isCurrentBoundary = isBoundary(textCharFromUtf8(startIt));
 
             // Scan to left until a word boundary is reached
             for (std::size_t startInv = 0; startInv <= wholeX; startInv++) {
-                if (isBoundary(*startIt) != isCurrentBoundary) {
+                if (isBoundary(textCharFromUtf8(startIt)) != isCurrentBoundary) {
                     break;
                 }
                 selectStart = { wholeX - startInv, wholeY };
-                startIt--;
+                startIt = ImTextFindPreviousUtf8Codepoint(currentWholeLine.data(), startIt);
             }
 
             // Scan to right until a word boundary is reached
             for (std::size_t end = wholeX; end <= utf8Length(currentWholeLine); end++) {
                 selectEnd = { end, wholeY };
-                if (isBoundary(*endIt) != isCurrentBoundary) {
+                if (isBoundary(textCharFromUtf8(endIt)) != isCurrentBoundary) {
                     break;
                 }
-                endIt++;
+                endIt = ImGuiAdvanceUtf8(endIt, 1);
             }
         } else if (ImGui::IsKeyDown(ImGuiMod_Shift)) {
             // Single click with shift - select text from start to click
@@ -375,7 +387,7 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine>& subLines, co
     const float textHeight = context->FontSize;
     const float itemSpacing = context->Style.ItemSpacing.y;
 
-    for (auto subLine : subLines) {
+    for (const auto& subLine : subLines) {
         auto wholeLine = getLineAtIdx(subLine.wholeLineIndex);
 
         auto wholeLineEnd = wholeLine.data() + wholeLine.size();
@@ -384,8 +396,8 @@ void TextSelect::drawSelection(const ImVector<TextSelect::SubLine>& subLines, co
         const char* subLineEnd = subLine.string.data() + subLine.string.size();
 
         // Indices of sub-line bounds relative to the start of the whole line.
-        std::size_t subLineStartX = utf8::unchecked::distance(wholeLine.data(), subLineStart);
-        std::size_t subLineEndX = utf8::unchecked::distance(wholeLine.data(), subLineEnd);
+        std::size_t subLineStartX = utf8Length(wholeLine.data(), subLineStart);
+        std::size_t subLineEndX = utf8Length(wholeLine.data(), subLineEnd);
 
         float minY = accumulatedHeight;
         accumulatedHeight += textHeight;
@@ -433,17 +445,16 @@ void TextSelect::copy() const {
         std::size_t subStart = i == startY ? startX : 0;
         std::string_view line = getLineAtIdx(i);
 
-        auto stringStart = line.begin();
-        utf8::unchecked::advance(stringStart, subStart);
+        const char* stringStart = ImGuiAdvanceUtf8(line.data(), subStart);
+        const char* stringEnd = stringStart;
 
-        auto stringEnd = stringStart;
         if (i == endY) {
-            utf8::unchecked::advance(stringEnd, endX - subStart);
+            stringEnd = ImGuiAdvanceUtf8(stringEnd, endX - subStart);
         } else {
-            stringEnd = line.end();
+            stringEnd = line.data() + line.size();
         }
 
-        std::string_view lineToAdd = line.substr(stringStart - line.begin(), stringEnd - stringStart);
+        std::string_view lineToAdd = line.substr(stringStart - line.data(), stringEnd - stringStart);
         selectedText += lineToAdd;
 
         // If lines before the last line don't already end with newlines, add them in
