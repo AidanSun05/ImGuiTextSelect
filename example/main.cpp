@@ -100,6 +100,11 @@ int main() {
             if (ImGui::MenuItem("Select all", "Ctrl+A")) {
                 textSelect.selectAll();
             }
+
+
+            if (ImGui::MenuItem("Clear selection")) {
+                textSelect.clearSelection();
+            }
             ImGui::EndPopup();
         }
 
