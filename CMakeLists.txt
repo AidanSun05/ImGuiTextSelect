@@ -1,11 +1,17 @@
+# Copyright 2024-2025 Aidan Sun and the ImGuiTextSelect contributors
+# SPDX-License-Identifier: MIT
+
 cmake_minimum_required(VERSION 3.15)
 project(ImGuiTextSelectExample)
 
 # Set C++ standard and encoding (CMake doesn't directly handle encodings, but this ensures UTF-8)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
-add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
+if (MSVC)
+    add_compile_options(/utf-8)
+elseif (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-finput-charset=UTF-8 -fexec-charset=UTF-8)
+endif()
 
 # Fetch dependencies (modern CMake approach)
 include(FetchContent)
