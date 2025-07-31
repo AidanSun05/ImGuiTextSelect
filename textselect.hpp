@@ -94,4 +94,9 @@ public:
 
     // Draws the text selection rectangle and handles user input.
     void update();
+
+    void clearSelection() {
+        selectStart = CursorPos();
+        selectEnd = CursorPos();
+    }
 };
