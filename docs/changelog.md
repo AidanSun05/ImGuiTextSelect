@@ -2,11 +2,12 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
-## Unreleased
+## 1.3.1 (03/03/2026)
 
 ### Additions
 
 - Added a CMake build script for the example (#13). Thanks @yansong1221!
+- Added awareness for the `ImGui::Indent()` function (#14). Thanks @Spl3en!
 
 ## 1.3.0 (07/30/2025)
 
