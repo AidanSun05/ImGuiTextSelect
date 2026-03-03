@@ -468,6 +468,7 @@ void TextSelect::selectAll() {
 void TextSelect::update() {
     // ImGui::GetCursorStartPos() is in window coordinates so it is added to the window position
     ImVec2 cursorPosStart = ImGui::GetWindowPos() + ImGui::GetCursorStartPos();
+    cursorPosStart.x += ImGui::GetCurrentWindow()->DC.Indent.x;
 
     // Switch cursors if the window is hovered
     bool hovered = ImGui::IsWindowHovered();
