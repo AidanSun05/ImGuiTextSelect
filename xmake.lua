@@ -2,6 +2,7 @@
 -- SPDX-License-Identifier: MIT
 
 add_rules("mode.debug")
+set_warnings("allextra")
 
 add_requires("imgui", { configs = { glfw = true, opengl3 = true } })
 add_requires("glfw", { configs = { glfw_include = "system" } })
