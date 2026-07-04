@@ -30,7 +30,12 @@ bool endsWith(std::string_view str, char suffix) {
 // Simple word boundary detection, accounts for Latin Unicode blocks only.
 static bool isBoundary(ImWchar32 c) {
     using Range = std::array<ImWchar32, 2>;
-    std::array ranges{ Range{ 0x20, 0x2F }, Range{ 0x3A, 0x40 }, Range{ 0x5B, 0x60 }, Range{ 0x7B, 0xBF } };
+    std::array ranges{
+        Range{ 0x20, 0x2F },
+        Range{ 0x3A, 0x40 },
+        Range{ 0x5B, 0x60 },
+        Range{ 0x7B, 0xBF },
+    };
 
     return std::find_if(ranges.begin(), ranges.end(), [c](const Range& r) { return c >= r[0] && c <= r[1]; })
         != ranges.end();
@@ -200,7 +205,7 @@ ImVector<TextSelect::SubLine> TextSelect::getSubLines() const {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
 
-    for (std::size_t i = 0; i < numLines; ++i) {
+    for (std::size_t i = 0; i < numLines; i++) {
         auto wholeLine = getLineAtIdx(i);
         if (enableWordWrap) {
             auto subLines = wrapText(wholeLine, wrapWidth);
@@ -226,12 +231,13 @@ void TextSelect::handleMouseDown(const ImVector<SubLine>& subLines, const ImVec2
     // Find the index of the sub line under the cursor.
     std::size_t subY = 0;
     float accumulatedHeight = textHeight;
-    for (std::size_t i = 1; i < static_cast<std::size_t>(subLines.size()); ++i) {
+    for (std::size_t i = 1; i < static_cast<std::size_t>(subLines.size()); i++) {
         if (mousePos.y < accumulatedHeight) {
             break;
         }
-        ++subY;
+        subY++;
         accumulatedHeight += textHeight;
+
         // Don't add spacing between sublines, only between whole lines.
         if (subLines[i].wholeLineIndex != subLines[i - 1].wholeLineIndex) {
             accumulatedHeight += itemSpacing;
@@ -255,14 +261,14 @@ void TextSelect::handleMouseDown(const ImVector<SubLine>& subLines, const ImVec2
             std::size_t firstSubLineIndex = subY;
             while (firstSubLineIndex > 0
                 && subLines[firstSubLineIndex - 1].wholeLineIndex == subLines[firstSubLineIndex].wholeLineIndex) {
-                --firstSubLineIndex;
+                firstSubLineIndex--;
             }
 
             // Find the last sub line in the whole line
             std::size_t lastSubLineIndex = subY;
             while (lastSubLineIndex < static_cast<std::size_t>(subLines.size()) - 1
                 && subLines[lastSubLineIndex + 1].wholeLineIndex == subLines[lastSubLineIndex].wholeLineIndex) {
-                ++lastSubLineIndex;
+                lastSubLineIndex++;
             }
 
             bool atLastLine = wholeY == (getNumLines() - 1);
@@ -395,6 +401,7 @@ void TextSelect::drawSelection(const ImVector<SubLine>& subLines, const ImVec2& 
 
         float minY = accumulatedHeight;
         accumulatedHeight += textHeight;
+
         // Item spacing is not applied between sub-lines
         if (subLineEnd == wholeLineEnd) {
             // We are rendering last sub-line.
@@ -406,6 +413,7 @@ void TextSelect::drawSelection(const ImVector<SubLine>& subLines, const ImVec2& 
         if (startY > subLine.wholeLineIndex || (subLine.wholeLineIndex == startY && startX >= subLineEndX)) {
             continue;
         }
+
         // Skip whole/sub lines after selection.
         if (endY < subLine.wholeLineIndex || (subLine.wholeLineIndex == endY && endX < subLineStartX)) {
             break;
@@ -478,10 +486,8 @@ void TextSelect::update() {
     auto subLines = getSubLines();
 
     // Handle mouse events
-    if (ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
-        if (hovered) {
-            shouldHandleMouseDown = true;
-        }
+    if (hovered && ImGui::IsMouseClicked(ImGuiMouseButton_Left)) {
+        shouldHandleMouseDown = true;
     }
 
     if (ImGui::IsMouseReleased(ImGuiMouseButton_Left)) {

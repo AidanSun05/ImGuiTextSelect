@@ -101,7 +101,6 @@ int main() {
                 textSelect.selectAll();
             }
 
-
             if (ImGui::MenuItem("Clear selection")) {
                 textSelect.clearSelection();
             }
