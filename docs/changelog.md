@@ -2,6 +2,12 @@
 
 This document tracks the changes between ImGuiTextSelect versions. Dates are written in the MM/DD/YYYY format.
 
+## 1.3.2 (07/03/2026)
+
+### Improvements
+
+- Addressed various Clang compiler warnings (#15). Thanks @Clownacy!
+
 ## 1.3.1 (03/03/2026)
 
 ### Additions
