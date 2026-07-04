@@ -1,7 +1,9 @@
 // Copyright 2024-2026 Aidan Sun and the ImGuiTextSelect contributors
 // SPDX-License-Identifier: MIT
 
+#ifndef IMGUI_DEFINE_MATH_OPERATORS
 #define IMGUI_DEFINE_MATH_OPERATORS
+#endif
 
 #include "textselect.hpp"
 
@@ -217,8 +219,6 @@ void TextSelect::handleMouseDown(const ImVector<SubLine>& subLines, const ImVec2
         return;
     }
 
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
     const float textHeight = ImGui::GetTextLineHeight();
     const float itemSpacing = ImGui::GetCurrentContext()->Style.ItemSpacing.y;
     ImVec2 mousePos = ImGui::GetMousePos() - cursorPosStart;
@@ -226,7 +226,7 @@ void TextSelect::handleMouseDown(const ImVector<SubLine>& subLines, const ImVec2
     // Find the index of the sub line under the cursor.
     std::size_t subY = 0;
     float accumulatedHeight = textHeight;
-    for (std::size_t i = 1; i < subLines.size(); ++i) {
+    for (std::size_t i = 1; i < static_cast<std::size_t>(subLines.size()); ++i) {
         if (mousePos.y < accumulatedHeight) {
             break;
         }
@@ -260,7 +260,7 @@ void TextSelect::handleMouseDown(const ImVector<SubLine>& subLines, const ImVec2
 
             // Find the last sub line in the whole line
             std::size_t lastSubLineIndex = subY;
-            while (lastSubLineIndex < subLines.size() - 1
+            while (lastSubLineIndex < static_cast<std::size_t>(subLines.size()) - 1
                 && subLines[lastSubLineIndex + 1].wholeLineIndex == subLines[lastSubLineIndex].wholeLineIndex) {
                 ++lastSubLineIndex;
             }
@@ -377,8 +377,6 @@ void TextSelect::drawSelection(const ImVector<SubLine>& subLines, const ImVec2& 
     float accumulatedHeight = 0;
 
     ImGuiContext* context = ImGui::GetCurrentContext();
-    ImGuiWindow* window = ImGui::GetCurrentWindow();
-    const float wrapWidth = ImGui::CalcWrapWidthForPos(window->DC.CursorPos, 0);
     const float newlineWidth = ImGui::CalcTextSize(" ").x;
     const float textHeight = context->FontSize;
     const float itemSpacing = context->Style.ItemSpacing.y;
@@ -405,11 +403,11 @@ void TextSelect::drawSelection(const ImVector<SubLine>& subLines, const ImVec2& 
         float maxY = accumulatedHeight;
 
         // Skip whole/sub lines before selection.
-        if (startY > subLine.wholeLineIndex || subLine.wholeLineIndex == startY && startX >= subLineEndX) {
+        if (startY > subLine.wholeLineIndex || (subLine.wholeLineIndex == startY && startX >= subLineEndX)) {
             continue;
         }
         // Skip whole/sub lines after selection.
-        if (endY < subLine.wholeLineIndex || subLine.wholeLineIndex == endY && endX < subLineStartX) {
+        if (endY < subLine.wholeLineIndex || (subLine.wholeLineIndex == endY && endX < subLineStartX)) {
             break;
         }
 
